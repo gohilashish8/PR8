@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+
 const getData = () => {
   const data = localStorage.getItem("data");
   if (data != null) {
@@ -9,55 +9,237 @@ const getData = () => {
     return [];
   }
 };
+
 const ViewData = () => {
   const [data, setData] = useState([]);
+  const [sortColumn, setSortColumn] = useState("name");
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [filterStd, setFilterStd] = useState("all");
+  const [filterData , setFiterData] = useState(getData())
+
   const getFinalData = () => {
     setData(getData());
   };
+
   useEffect(() => {
     getFinalData();
   }, []);
+
   const handleDelete = (e) => {
     const newData = data.filter((res) => res.id !== e);
     localStorage.setItem("data", JSON.stringify(newData));
     getFinalData();
   };
 
-  const handleFillter = () => {
-   
+  const handleSearch = (e) => {
+    const searchTerm = e.target.value.toLowerCase();
+    const filteredData = getData().filter((item) => {
+      const itemName = item.name.toLowerCase();
+      return itemName.includes(searchTerm);
+    });
+    setData(filteredData);
+  };
+  const handleSort = (column) => {
+    if (sortColumn === column) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortColumn(column);
+      setSortOrder("asc");
+    }
+  };
 
-  }
+  const sortedData = data.sort((a, b) => {
+    const valueA = a[sortColumn];
+    const valueB = b[sortColumn];
+    if (valueA === "undefined" || valueB === "undefined") {
+      return 0;
+    }
+
+    let comparison = 0;
+    if (sortColumn === "number") {
+      comparison = valueA - valueB;
+    } else {
+      comparison = valueA.localeCompare(valueB);
+    }
+
+    return sortOrder === "asc" ? comparison : -comparison;
+  });
+
+
+  const handleFilter = (e) => {
+    const selectedStd = e.target.value;
+    setFilterStd(selectedStd);
+    if (selectedStd === "all") {
+      getFinalData();
+    } else {
+      const filteredData = getData().filter((item) => item.std === selectedStd);
+      setData(filteredData);
+    }
+  };
+  
+ 
+
   return (
     <>
       <div className="container mx-auto">
         <div className="overflow-x-auto">
           <div className=" flex items-center justify-center font-sans overflow-hidden">
             <div className="w-full">
+              <div className="my-2">
+                <label className="text-sm font-medium text-gray-900 mr-2">
+                  Filter by Std:
+                </label>
+                <select
+                  onChange={handleFilter}
+                  value={filterStd}
+                  className="p-2 border w-[120px] border-gray-300 rounded"
+                >
+                  <option value="all">All</option>
+                  {filterData.map((val) => (
+                    <option key={val.id} value={val.std}>
+                      {val.std}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               <div className="bg-white shadow-md rounded my-6">
-
-
-
-
-
-
+                <label
+                  htmlFor="default-search"
+                  className="mb-2 text-sm font-medium text-gray-900 sr-only"
+                >
+                  Search
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <svg
+                      className="w-4 h-4 text-gray-500"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                      />
+                    </svg>
+                  </div>
+                  <input
+                    type="search"
+                    id="default-search"
+                    className="block w-full p-4 pl-10 my-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Search here..."
+                    onChange={handleSearch}
+                  />
+                </div>
                 <table className="min-w-max w-full table-auto">
                   <thead>
                     <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
                       <th className="py-3 px-6 text-center">index</th>
-                      <th className="py-3 px-6 text-left">Name</th>
-                      <th className="py-3 px-6 text-left">Number</th>
-                      <th className="py-3 px-6 text-center">Email</th>
-                      <th className="py-3 px-6 text-center">Std.</th>
-                      <th className="py-3 px-6 text-center">city</th>
-                      <th className="py-3 px-6 text-center">Roll no.</th>
-                      <th className="py-3 px-6 text-center">gr no.</th>
-                      <th className="py-3 px-6 text-center">gender</th>
+                      <th className="py-3 px-6 text-left">
+                        <button
+                          onClick={() => handleSort("name")}
+                          className="flex items-center justify-center mx-auto capitalize cursor-pointer"
+                        >
+                          NAME
+                          {sortColumn === "name" && (
+                            <span className="ml-1">
+                              {sortOrder === "asc" ? "▲" : "▼"}
+                            </span>
+                          )}
+                        </button>
+                      </th>
+
+                      <th className="py-3 px-6 text-center">
+                        <button
+                          onClick={() => handleSort("number")}
+                          className="flex items-center justify-center mx-auto capitalize cursor-pointer"
+                        >
+                          NUMBER
+                          {sortColumn === "number" && (
+                            <span className="ml-1">
+                              {sortOrder === "asc" ? "▲" : "▼"}
+                            </span>
+                          )}
+                        </button>
+                      </th>
+
+                      <th className="py-3 px-6 text-center">
+                        <button
+                          onClick={() => handleSort("email")}
+                          className="flex items-center justify-center mx-auto capitalize cursor-pointer"
+                        >
+                          EMAIL
+                          {sortColumn === "email" && (
+                            <span className="ml-1">
+                              {sortOrder === "asc" ? "▲" : "▼"}
+                            </span>
+                          )}
+                        </button>
+                      </th>
+                      <th className="py-3 px-6 text-center">
+                        <button
+                          onClick={() => handleSort("std")}
+                          className="flex items-center justify-center mx-auto capitalize cursor-pointer"
+                        >
+                          STD.
+                          {sortColumn === "std" && (
+                            <span className="ml-1">
+                              {sortOrder === "asc" ? "▲" : "▼"}
+                            </span>
+                          )}
+                        </button>
+                      </th>
+                      <th className="py-3 px-6 text-center">
+                        <button
+                          onClick={() => handleSort("city")}
+                          className="flex items-center justify-center mx-auto capitalize cursor-pointer"
+                        >
+                          CITY
+                          {sortColumn === "city" && (
+                            <span className="ml-1">
+                              {sortOrder === "asc" ? "▲" : "▼"}
+                            </span>
+                          )}
+                        </button>
+                      </th>
+                      <th className="py-3 px-6 text-center">
+                        <button
+                          onClick={() => handleSort("rollNO")}
+                          className="flex items-center justify-center mx-auto capitalize cursor-pointer"
+                        >
+                          ROLL NO.
+                          {sortColumn === "rollNO" && (
+                            <span className="ml-1">
+                              {sortOrder === "asc" ? "▲" : "▼"}
+                            </span>
+                          )}
+                        </button>
+                      </th>
+                      <th className="py-3 px-6 text-center">
+                        <button
+                          onClick={() => handleSort("grno")}
+                          className="flex items-center justify-center mx-auto capitalize cursor-pointer"
+                        >
+                          GR NO.
+                          {sortColumn === "grno" && (
+                            <span className="ml-1">
+                              {sortOrder === "asc" ? "▲" : "▼"}
+                            </span>
+                          )}
+                        </button>
+                      </th>
+                      <th className="py-3 px-6 text-center">Gender</th>
                       <th className="py-3 px-6 text-center">Option</th>
                     </tr>
                   </thead>
                   <tbody className="text-gray-600 text-sm font-light">
-                    {data != null ? data.map((res, i) => {
-                      return (
+                    {sortedData.length > 0 ? (
+                      sortedData.map((res, i) => (
                         <tr
                           className="border-b border-gray-200 hover:bg-gray-100"
                           key={res.id}
@@ -121,8 +303,14 @@ const ViewData = () => {
                             </div>
                           </td>
                         </tr>
-                      );
-                    }) : <div> No Data found</div> }
+                      ))
+                    ) : (
+                      <tr>
+                        <td className="py-3 px-6 text-center" colSpan="10">
+                          No Data found
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
