@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-
-
-
-
 const getData = () => {
   const data = localStorage.getItem("data");
   if (data != null) {
@@ -21,6 +17,11 @@ const ViewData = () => {
   const [filterStd, setFilterStd] = useState("all");
   const [eaxtra, setExtra] = useState(getData());
   const navigate = useNavigate();
+  const [openDropdown, setOpenDropdown] = useState(null);
+
+  const handleDropdownToggle = (id) => {
+    setOpenDropdown(id === openDropdown ? null : id);
+  };
 
   const getFinalData = () => {
     setData(getData());
@@ -46,6 +47,7 @@ const ViewData = () => {
     console.log(filteredData);
     setExtra(filteredData);
   };
+
   const handleSort = (column) => {
     if (sortColumn === column) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -82,26 +84,19 @@ const ViewData = () => {
       setData(filteredData);
     }
   };
+
   const filterData = eaxtra;
   const uniqueFilterData = [...new Set(filterData.map((val) => val.std))];
 
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+  const hendleNavigate = (res) => {
+    navigate("/singledata", { state: res });
   };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-  const hendleNavigate =  (res) => {
-    navigate("/singledata", {state : res} )
-  }
 
   return (
     <>
       <div className="container mx-auto">
-        <div className="overflow-x-auto">
-          <div className=" flex items-center justify-center font-sans overflow-hidden">
+        <div>
+          <div className=" flex items-center justify-center font-sans">
             <div className="w-full">
               <div className="my-2">
                 <label className="text-sm font-medium text-gray-900 mr-2">
@@ -292,82 +287,113 @@ const ViewData = () => {
                             </td>
                             <td className="py-3 px-6 text-center relative">
                               <div className="flex item-center justify-center gap-5">
-
-
-                               
-
-                                <Link to={`/editdata/${res.id}`}>
-                                  <div className=" mr-2 cursor-pointer flex justify-center ">
-                                    <div>
-                                      <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                        className="w-[20px] h-[20px] inline mr-2"
-                                      >
-                                        <path
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                          strokeWidth="2"
-                                          d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                                        />
-                                      </svg>
-                                    </div>
-                                    {/* <div>Edit</div> */}
-                                  </div>
-                                </Link>
-
-                                <div
-                                  className="w-4 mr-2 transform flex cursor-pointer"
-                                  onClick={() => handleDelete(res.id)}
+                                <button
+                                  id={`dropdownMenuIconButton-${res.id}`}
+                                  onClick={() => handleDropdownToggle(res.id)}
+                                  className="inline-flex items-center p-2 text-sm font-medium text-center text-gray-900 bg-white rounded-lg  focus:ring-4 focus:outline-none "
+                                  type="button"
                                 >
-                                  <div>
-                                    <svg
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      fill="none"
-                                      viewBox="0 0 24 24"
-                                      stroke="currentColor"
-                                      className="w-[20px] h-[20px] inline mr-2"
-                                    >
-                                      <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                      />
-                                    </svg>
-                                  </div>
-                                  {/* <div> Delete </div> */}
-                                </div>
+                                  <svg
+                                    className="w-5 h-5"
+                                    aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="currentColor"
+                                    viewBox="0 0 4 15"
+                                  >
+                                    <path d="M3.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 6.041a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 5.959a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" />
+                                  </svg>
+                                </button>
 
-                                <div onClick={() => hendleNavigate(res)} className="w-4 mr-2 transform flex cursor-pointer">
-                                  <div>
-                                    <svg
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      fill="none"
-                                      viewBox="0 0 24 24"
-                                      stroke="currentColor"
-                                      className="w-[20px] h-[20px] inline mr-2"
+                                {openDropdown === res.id && (
+                                  <div
+                                    id={`dropdownDots-${res.id}`}
+                                    className="z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-[120px] absolute top-2 right-1 mt-10"
+                                  >
+                                    <ul
+                                      aria-labelledby={`dropdownMenuIconButton-${res.id}`}
                                     >
-                                      <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                                      />
-                                      <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                                      />
-                                    </svg>
+                                     
+                                        <Link to={`/editdata/${res.id}`} >
+                                          <div className=" mr-2 cursor-pointer flex py-2 px-2 hover:bg-slate-200  w-full ">
+                                            <div>
+                                              <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                                className="w-[20px] h-[20px] inline mr-2"
+                                              >
+                                                <path
+                                                  strokeLinecap="round"
+                                                  strokeLinejoin="round"
+                                                  strokeWidth="2"
+                                                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                                                />
+                                              </svg>
+                                            </div>
+                                            <div>Edit</div>
+                                          </div>
+                                        </Link>
+                                      
+                                     
+                                        <div
+                                          className=" mr-2 transform flex cursor-pointer py-2 px-2 hover:bg-slate-200  w-full "
+                                          onClick={() => handleDelete(res.id)}
+                                        >
+                                          <div>
+                                            <svg
+                                              xmlns="http://www.w3.org/2000/svg"
+                                              fill="none"
+                                              viewBox="0 0 24 24"
+                                              stroke="currentColor"
+                                              className="w-[20px] h-[20px] inline mr-2"
+                                            >
+                                              <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth="2"
+                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                              />
+                                            </svg>
+                                          </div>
+                                          <div> Delete </div>
+                                        </div>
+                                     
+                                     
+                                        <div
+                                          onClick={() => hendleNavigate(res)}
+                                          className=" mr-2 transform flex cursor-pointer py-2 px-2 hover:bg-slate-200  w-full"
+                                        >
+                                          <div>
+                                            <svg
+                                              xmlns="http://www.w3.org/2000/svg"
+                                              fill="none"
+                                              viewBox="0 0 24 24"
+                                              stroke="currentColor"
+                                              className="w-[20px] h-[20px] inline mr-2"
+                                            >
+                                              <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth="2"
+                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                                              />
+                                              <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth="2"
+                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                                              />
+                                            </svg>
+                                          </div>
+                                          <div> View </div>
+                                        </div>
+                                      
+                                    </ul>
                                   </div>
-                                  {/* <div> View </div>// */}
-                                </div>
-
+                                )}
                               </div>
+                              <div className="flex item-center justify-center gap-5"></div>
                             </td>
                           </tr>
                         );
