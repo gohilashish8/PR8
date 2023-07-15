@@ -14,6 +14,8 @@ const EditData = () => {
     gender: "",
     rollNO: "",
     city: "",
+    img:"",
+
   });
   const { id } = useParams();
   const getData = () => {
@@ -41,6 +43,11 @@ const EditData = () => {
     localStorage.setItem("data", JSON.stringify(result));
     navigate("/viewdata");
   };
+//   function handleChangess(e) {
+//     const imgUrl = URL.createObjectURL(e.target.files[0]);
+//     setData ({...data , img : imgUrl });
+    
+// }
   return (
     <>
       <div className="container mx-auto">
@@ -156,7 +163,8 @@ const EditData = () => {
                     onChange={handleChange}
                     className="block appearance-none w-full bg-grey-lighter border border-grey-lighter text-grey-darker py-3 px-4 pr-8 rounded group:"
                     id="grid-state"
-                    checked={data.std}
+                    
+
                   >
                     <option value="0">Select</option>
                     {[
@@ -175,19 +183,11 @@ const EditData = () => {
                     ].map((val) => {
                       return (
                         
-                          <option value={val} selected={val === data.std} >{val}</option>
+                          <option key={val.slice(0,2)}  value={val} selected={val === data.std} >{val}</option>
                     )
                     } ) }
                   </select>
-                  <div className="pointer-events-none absolute pin-y pin-r flex items-center px-2 text-grey-darker right-0 top-[50%] translate-y-[-50%] group-focus:rotate-180 ">
-                    <svg
-                      className="h-4 w-4"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                    </svg>
-                  </div>
+                 
                 </div>
               </div>
               <div className="md:w-1/2 px-3">
@@ -217,21 +217,21 @@ const EditData = () => {
                 gender
               </div>
               <div className="md:w-full px-3 flex gap-5">
-                {["Male", "Female"].map((label) => {
+                {["Male", "Female"].map((label , i) => {
                   return (
-                    <div>
+                    <div key={i} >
                       <input
                         type="radio"
                         name="gender"
                         id={label}
                         value={label}
-                        class="peer hidden"
+                        className="peer hidden"
                         onChange={handleChange}
                         checked={label === data.gender}
                       />
                       <label
                         htmlFor={label}
-                        class="block cursor-pointer select-none rounded-[5px] p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white"
+                        className="block cursor-pointer select-none rounded-[5px] p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white"
                       >
                         {label}
                       </label>
@@ -240,6 +240,10 @@ const EditData = () => {
                 })}
               </div>
             </div>
+            {/* <div className="-mx-3 md:flex mb-6">
+            <input type="file" onChange={handleChangess} />
+          </div> */}
+          
             <div className="-mx-3 md:flex mb-6">
               <div className="md:w-full px-3 flex justify-center">
                 <button

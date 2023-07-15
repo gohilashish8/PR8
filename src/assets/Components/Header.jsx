@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom'
 const Header = () => {
   return (
    
-<div className="w-full">
-    <nav className="bg-white shadow-lg">
+<div className="w-full sticky top-0 z-[9999]">
+    <nav className="bg-white shadow-lg ">
         <div className="md:flex items-center justify-between py-2 px-8 md:px-12">
             <div className="flex justify-between items-center">
                <div className="text-2xl font-bold text-gray-800 md:text-3xl">

@@ -1,6 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
 
 const getData = () => {
   const data = localStorage.getItem("data");
@@ -20,8 +21,17 @@ const AddNewData = () => {
     gender: "",
     rollNO: "",
     city: "",
+    img:"",
   });
   const navigation = useNavigate();
+
+
+
+  // function handleChangess(e) {
+  //     const imgUrl = URL.createObjectURL(e.target.files[0]);
+  //     setData ({...data , img : imgUrl });
+      
+  // }
 
   const handleChange = (e) => {
     setData({ ...data, [e.target.name]: e.target.value });
@@ -30,7 +40,8 @@ const AddNewData = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const oldData = getData();
-    const id = oldData.length + 1001;
+    const id = uuidv4().slice(0, 4);
+    console.log(id);
     const finaldata = { ...data, id };
     const latestData = [...oldData, finaldata];
     console.log(latestData);
@@ -44,9 +55,11 @@ const AddNewData = () => {
       gender: "",
       rollNO: "",
       city: "",
+      massage: "",
     });
     navigation("/viewdata");
   };
+  
 
   return (
     <div className="container mx-auto">
@@ -130,6 +143,27 @@ const AddNewData = () => {
               />
             </div>
           </div>
+          <div className="-mx-3 md:flex mb-6">
+            <div className="md:w-full px-3">
+              <label
+                className="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2"
+                htmlFor="grid-password"
+              >
+                massage
+              </label>
+              <textarea
+                required
+                className="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4 mb-3"
+                id="grid-password"
+                type="text"
+                placeholder="massage"
+                onChange={handleChange}
+                value={data.massage}
+                name="massage"
+              ></textarea>
+            </div>
+          </div>
+
           <div className="-mx-3 md:flex mb-2">
             <div className="md:w-1/2 px-3 mb-6 md:mb-0">
               <label
@@ -157,45 +191,35 @@ const AddNewData = () => {
                 Standard
               </label>
               <div className="relative">
-                
-
                 <select
-                    name="std"
-                    onChange={handleChange}
-                    className="block appearance-none w-full bg-grey-lighter border border-grey-lighter text-grey-darker py-3 px-4 pr-8 rounded group:"
-                    id="grid-state"
-                    checked={data.std}
-                  >
-                    <option value="0">Select</option>
-                    {[
-                      "1st",
-                      "2nd",
-                      "3th",
-                      "4th",
-                      "5th",
-                      "6th",
-                      "7th",
-                      "8th",
-                      "9th",
-                      "10th",
-                      "11th",
-                      "12th",
-                    ].map((val) => {
-                      return (
-                        
-                          <option value={val} >{val}</option>
-                    )
-                    } ) }
-                  </select>
-                <div className="pointer-events-none absolute pin-y pin-r flex items-center px-2 text-grey-darker right-0 top-[50%] translate-y-[-50%] group-focus:rotate-180 ">
-                  <svg
-                    className="h-4 w-4"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                  </svg>
-                </div>
+                  name="std"
+                  onChange={handleChange}
+                  className="block appearance-none w-full bg-grey-lighter border border-grey-lighter text-grey-darker py-3 px-4 pr-8 rounded group:"
+                  id="grid-state"
+                  checked={data.std}
+                >
+                  <option value="0">Select</option>
+                  {[
+                    "1st",
+                    "2nd",
+                    "3th",
+                    "4th",
+                    "5th",
+                    "6th",
+                    "7th",
+                    "8th",
+                    "9th",
+                    "10th",
+                    "11th",
+                    "12th",
+                  ].map((val, i) => {
+                    return (
+                      <option key={val.slice(0, 2)} value={val}>
+                        {val}
+                      </option>
+                    );
+                  })}
+                </select>
               </div>
             </div>
             <div className="md:w-1/2 px-3">
@@ -218,22 +242,21 @@ const AddNewData = () => {
             </div>
           </div>
           <div className="-mx-3 md:flex mb-6">
-        
             <div className="md:w-full px-3 flex gap-5">
-              {["Male", "Female"].map((label) => {
+              {["Male", "Female"].map((label, i) => {
                 return (
-                  <div>
+                  <div key={i + 1}>
                     <input
                       type="radio"
                       name="gender"
                       id={label}
                       value={label}
-                      class="peer hidden"
+                      className="peer hidden"
                       onChange={handleChange}
                     />
                     <label
                       htmlFor={label}
-                      class="block cursor-pointer select-none rounded-[5px] p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white"
+                      className="block cursor-pointer select-none rounded-[5px] p-2 text-center peer-checked:bg-blue-500 peer-checked:font-bold peer-checked:text-white"
                     >
                       {label}
                     </label>
@@ -242,6 +265,10 @@ const AddNewData = () => {
               })}
             </div>
           </div>
+          {/* <div className="-mx-3 md:flex mb-6">
+            <input type="file" onChange={handleChangess} />
+          </div> */}
+
           <div className="-mx-3 md:flex mb-6">
             <div className="md:w-full px-3 flex justify-center">
               <button

@@ -8,6 +8,7 @@ import AddNewData from "./assets/Components/AddNewData";
 import ViewData from "./assets/Components/ViewData";
 import Home from "./assets/Components/Home";
 import EditData from "./assets/Components/EditData";
+import SingleData from "./assets/Components/SingleData";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -21,6 +22,7 @@ function App() {
           <Route path="/addnewdata" element={<AddNewData />} />
           <Route path="/viewdata" element={<ViewData />} />
           <Route path="/editdata/:id" element={<EditData />} />
+          <Route path="/singledata" element={<SingleData />} />
         </Routes>
       </BrowserRouter>
     </>
