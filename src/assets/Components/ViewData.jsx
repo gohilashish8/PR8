@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const getData = () => {
@@ -18,6 +18,7 @@ const ViewData = () => {
   const [eaxtra, setExtra] = useState(getData());
   const navigate = useNavigate();
   const [openDropdown, setOpenDropdown] = useState(null);
+  const searchInputRef = useRef(null);
 
   const handleDropdownToggle = (id) => {
     setOpenDropdown(id === openDropdown ? null : id);
@@ -31,10 +32,18 @@ const ViewData = () => {
     getFinalData();
   }, []);
 
-  const handleDelete = (e) => {
-    const newData = data.filter((res) => res.id !== e);
+  const handleDelete = (id) => {
+    const newData = getData().filter((res) => res.id !== id);
     localStorage.setItem("data", JSON.stringify(newData));
-    getFinalData();
+
+    const isRecordInFilteredData = data.some((res) => res.id === id);
+
+    if (isRecordInFilteredData) {
+      setData(newData);
+      setExtra(newData);
+      searchInputRef.current.value = "";
+      setFilterStd("all");
+    }
   };
 
   const handleSearch = (e) => {
@@ -116,7 +125,7 @@ const ViewData = () => {
                 </select>
               </div>
 
-              <div className="bg-white shadow-md rounded my-6">
+              <div className="bg-white  rounded my-6">
                 <label
                   htmlFor="default-search"
                   className="mb-2 text-sm font-medium text-gray-900 sr-only"
@@ -147,6 +156,7 @@ const ViewData = () => {
                     className="block w-full p-4 pl-10 my-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Search here..."
                     onChange={handleSearch}
+                    ref={searchInputRef}
                   />
                 </div>
                 <table className="min-w-max w-full table-auto">
@@ -312,34 +322,8 @@ const ViewData = () => {
                                     <ul
                                       aria-labelledby={`dropdownMenuIconButton-${res.id}`}
                                     >
-                                     
-                                        <Link to={`/editdata/${res.id}`} >
-                                          <div className=" mr-2 cursor-pointer flex py-2 px-2 hover:bg-slate-200  w-full ">
-                                            <div>
-                                              <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                                className="w-[20px] h-[20px] inline mr-2"
-                                              >
-                                                <path
-                                                  strokeLinecap="round"
-                                                  strokeLinejoin="round"
-                                                  strokeWidth="2"
-                                                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                                                />
-                                              </svg>
-                                            </div>
-                                            <div>Edit</div>
-                                          </div>
-                                        </Link>
-                                      
-                                     
-                                        <div
-                                          className=" mr-2 transform flex cursor-pointer py-2 px-2 hover:bg-slate-200  w-full "
-                                          onClick={() => handleDelete(res.id)}
-                                        >
+                                      <Link to={`/editdata/${res.id}`}>
+                                        <div className=" mr-2 cursor-pointer flex py-2 px-2 hover:bg-slate-200  w-full ">
                                           <div>
                                             <svg
                                               xmlns="http://www.w3.org/2000/svg"
@@ -352,43 +336,65 @@ const ViewData = () => {
                                                 strokeLinecap="round"
                                                 strokeLinejoin="round"
                                                 strokeWidth="2"
-                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
                                               />
                                             </svg>
                                           </div>
-                                          <div> Delete </div>
+                                          <div>Edit</div>
                                         </div>
-                                     
-                                     
-                                        <div
-                                          onClick={() => hendleNavigate(res)}
-                                          className=" mr-2 transform flex cursor-pointer py-2 px-2 hover:bg-slate-200  w-full"
-                                        >
-                                          <div>
-                                            <svg
-                                              xmlns="http://www.w3.org/2000/svg"
-                                              fill="none"
-                                              viewBox="0 0 24 24"
-                                              stroke="currentColor"
-                                              className="w-[20px] h-[20px] inline mr-2"
-                                            >
-                                              <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth="2"
-                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                                              />
-                                              <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth="2"
-                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                                              />
-                                            </svg>
-                                          </div>
-                                          <div> View </div>
+                                      </Link>
+
+                                      <div
+                                        className=" mr-2 transform flex cursor-pointer py-2 px-2 hover:bg-slate-200  w-full "
+                                        onClick={() => handleDelete(res.id)}
+                                      >
+                                        <div>
+                                          <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                            className="w-[20px] h-[20px] inline mr-2"
+                                          >
+                                            <path
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                              strokeWidth="2"
+                                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                            />
+                                          </svg>
                                         </div>
-                                      
+                                        <div> Delete </div>
+                                      </div>
+
+                                      <div
+                                        onClick={() => hendleNavigate(res)}
+                                        className=" mr-2 transform flex cursor-pointer py-2 px-2 hover:bg-slate-200  w-full"
+                                      >
+                                        <div>
+                                          <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                            className="w-[20px] h-[20px] inline mr-2"
+                                          >
+                                            <path
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                              strokeWidth="2"
+                                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                                            />
+                                            <path
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                              strokeWidth="2"
+                                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                                            />
+                                          </svg>
+                                        </div>
+                                        <div> View </div>
+                                      </div>
                                     </ul>
                                   </div>
                                 )}
